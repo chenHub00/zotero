@@ -358,6 +358,8 @@ item-menu-relate-items =
     .label = Relate Items
 item-menu-unrelate-items =
     .label = Unrelate Items
+item-menu-run-ocr =
+    .label = Run OCR
 
 view-online = View Online
 item-menu-option-view-online =

@@ -112,6 +112,11 @@ pref("extensions.zotero.search.quicksearch-mode", "fields");
 // Fulltext indexing
 pref("extensions.zotero.fulltext.textMaxLength", 500000);
 pref("extensions.zotero.fulltext.pdfMaxPages", 100);
+
+// OCR for scanned PDFs (requires OCRmyPDF)
+pref("extensions.zotero.ocr.path", "");
+pref("extensions.zotero.ocr.languages", "eng");
+pref("extensions.zotero.ocr.auto", false);
 pref("extensions.zotero.search.useLeftBound", true);
 
 // Notes

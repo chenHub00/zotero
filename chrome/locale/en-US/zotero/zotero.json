@@ -434,6 +434,9 @@
 	"item-menu-unrelate-items.label": {
 		"string": "Unrelate Items"
 	},
+	"item-menu-run-ocr.label": {
+		"string": "Run OCR"
+	},
 	"view-online": {
 		"string": "View Online"
 	},

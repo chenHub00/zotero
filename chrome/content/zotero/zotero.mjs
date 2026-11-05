@@ -111,6 +111,7 @@ const xpcomFilesLocal = [
 	'locateManager',
 	'mime',
 	'notifier',
+	'ocr',
 	'undoHistory',
 	'fileHandlers',
 	'osKeyStore',

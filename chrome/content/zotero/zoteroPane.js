@@ -2422,6 +2422,16 @@ var ZoteroPane = new function () {
 	};
 	
 	
+	this.ocrSelected = async function () {
+		let items = this.getSelectedItems().filter(item => Zotero.OCR.canOCR(item));
+		if (!items.length) return;
+		let promise = Zotero.OCR.ocrItems(items);
+		Zotero.ProgressQueues.get('ocr').getDialog().open();
+		await promise;
+		await document.getElementById('zotero-attachment-box').updateItemIndexedState();
+	};
+	
+	
 	/**
 	 * @return {Promise<Zotero.Item>} - The new Zotero.Item
 	 */
@@ -4263,6 +4273,7 @@ var ZoteroPane = new function () {
 			'unrecognize',
 			'createParent',
 			'reindexItem',
+			'runOCR',
 		];
 		
 		var m = {};
@@ -4324,7 +4335,8 @@ var ZoteroPane = new function () {
 					showRelate = true, canRelate = true, canUnrelate = false,
 					canIndex = true,
 					canRecognize = true,
-					canUnrecognize = true;
+					canUnrecognize = true,
+					canOCR = true;
 				var canMarkRead = collectionTreeRows[0].isFeedsOrFeed();
 				var markUnread = true;
 				
@@ -4349,6 +4361,10 @@ var ZoteroPane = new function () {
 					
 					if (canIndex && !((await Zotero.Fulltext.canReindex(item)))) {
 						canIndex = false;
+					}
+					
+					if (canOCR && !Zotero.OCR.canOCR(item)) {
+						canOCR = false;
 					}
 					
 					if (canRecognize && !Zotero.RecognizeDocument.canRecognize(item)) {
@@ -4380,6 +4396,10 @@ var ZoteroPane = new function () {
 				
 				if (canIndex) {
 					show.add(m.reindexItem);
+				}
+				
+				if (canOCR) {
+					show.add(m.runOCR);
 				}
 				
 				if (canRecognize) {
@@ -4446,7 +4466,7 @@ var ZoteroPane = new function () {
 
 				
 				// Add in attachment separator
-				if (canCreateParent || canRecognize || canUnrecognize || canIndex) {
+				if (canCreateParent || canRecognize || canUnrecognize || canIndex || canOCR) {
 					show.add(m.sep5);
 				}
 				
@@ -4529,6 +4549,11 @@ var ZoteroPane = new function () {
 						
 						if (Zotero.RecognizeDocument.canRecognize(item)) {
 							show.add(m.recognizePDF);
+							showSep5 = true;
+						}
+						
+						if (Zotero.OCR.canOCR(item)) {
+							show.add(m.runOCR);
 							showSep5 = true;
 						}
 						

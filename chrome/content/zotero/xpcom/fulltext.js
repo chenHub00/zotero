@@ -618,9 +618,12 @@ Zotero.Fulltext = Zotero.FullText = new function () {
 	 * @param {String} filePath
 	 * @param {Number} itemID
 	 * @param {Boolean} [allPages] - If true, index all pages rather than pdfMaxPages
+	 * @param {Object} [options]
+	 * @param {Boolean} [options.forceOCR] - Run OCR if the PDF has no extractable text, even if
+	 *     the `ocr.auto` pref is off
 	 * @return {Promise}
 	 */
-	this.indexPDF = async function (filePath, itemID, allPages) {
+	this.indexPDF = async function (filePath, itemID, allPages, { forceOCR = false } = {}) {
 		var maxPages = Zotero.Prefs.get('fulltext.pdfMaxPages');
 		if (maxPages == 0) {
 			return false;
@@ -653,6 +656,23 @@ Zotero.Fulltext = Zotero.FullText = new function () {
 		catch (e) {
 			Zotero.logError(e);
 			return false;
+		}
+		if ((!text || !extractedPages)
+				&& (forceOCR || Zotero.Prefs.get('ocr.auto'))
+				&& await Zotero.OCR.isAvailable()) {
+			try {
+				let ocr = await Zotero.OCR.recognizeFile(
+					filePath,
+					{ maxPages: allPages ? null : maxPages }
+				);
+				if (ocr.text) {
+					text = ocr.text;
+					extractedPages = ocr.pages;
+				}
+			}
+			catch (e) {
+				Zotero.logError(e);
+			}
 		}
 		if (!text || !extractedPages) {
 			return false;
